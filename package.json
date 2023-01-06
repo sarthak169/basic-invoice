@@ -3,15 +3,21 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "nodemon app.js"
   },
   "dependencies": {
+    "compression": "^1.7.4",
+    "connect-mongo": "^3.1.2",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
     "express": "~4.16.1",
+    "express-session": "^1.17.3",
     "http-errors": "~1.6.3",
-    "jade": "~1.11.0",
-    "morgan": "~1.9.1",
-    "nodemon": "^2.0.20"
+    "mongoose": "^5.7.10",
+    "nodemon": "^1.19.4",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^4.7.1",
+    "winston-elasticsearch": "0.8.3"
   }
 }

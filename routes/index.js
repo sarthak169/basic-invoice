@@ -1,9 +1,7 @@
-var express = require('express');
-var router = express.Router();
+const API_PREFIX = '/api/v1';
+const userRoutes = require('./users');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
 
-module.exports = router;
+module.exports = (app) => {
+  app.use(API_PREFIX, userRoutes);
+};
