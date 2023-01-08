@@ -5,9 +5,7 @@ const log = require('../loggers/appLogger')(__filename);
 const Invoices = require('../models/invoice');
 const getInitials = require('../utilities/getInitials');
 
-
 const Validations = require('../utilities/Validations');
-
 
 module.exports.addInvoice = async (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -211,6 +209,52 @@ module.exports.getStoreName = async (req, res) => {
     return res.status(HTTPStatus.OK).send(query);
   } catch (err) {
     log.error('Error while getting store names', err);
+    return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).send({ message: 'Something went wrong' });
+  }
+};
+
+module.exports.getInvoicesPaginated = async (req, res) => {
+  try {
+    const { skip, limit } = req.query;
+    if (!skip) {
+      log.warn('Skip parameter not passed in the query');
+    }
+
+    if (!limit) {
+      log.warn('Limit Parameter not passed in the query');
+    }
+    log.info(`Fetching ${limit} Invoices`);
+    const skipInteger = skip ? +skip : 0;
+    const limitInteger = limit ? +limit : 10;
+    //const query = await Invoices.aggregate([{ $skip: skipInteger }, { $limit: limitInteger }]);
+    const query = await Invoices.find({}, { code: 1, retailerName: 1, amountCollected: 1, retailerID: 1, salesmanName: 1, paymentRecord: 1, invoiceAmount: 1, brandName: 1 }).skip(skipInteger).limit(limitInteger).sort({ "_id": -1 });
+    log.info(`Sending ${limit} Invoices`);
+    return res.status(HTTPStatus.OK).send(query);
+  } catch (err) {
+    log.error('Error while getting invoices', err);
+    return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).send({ message: 'Something went wrong' });
+  }
+};
+
+module.exports.getParticularInvoice = async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    if (!code) {
+      log.error(`No Invoice Code sent to fetch from ip: ${ip}`);
+      return res.status(HTTPStatus.BAD_REQUEST).send({ message: 'Invalid Invoice Code' });
+    } 
+
+    const query = await Invoices.findOne({ code }, { code: 1, retailerName: 1, amountCollected: 1, retailerID: 1, salesmanName: 1, paymentRecord: 1, invoiceAmount: 1, brandName: 1 });
+
+    if (!query) {
+      log.error(`Invalid Invoice Code sent to fetch from ip: ${ip}`);
+      return res.status(HTTPStatus.BAD_REQUEST).send({ message: 'Invalid Invoice Code' });
+    }
+
+    return res.status(HTTPStatus.OK).send(query);
+  } catch (err) {
+    log.error('Error while getting particular invoice', err);
     return res.status(HTTPStatus.INTERNAL_SERVER_ERROR).send({ message: 'Something went wrong' });
   }
 };
