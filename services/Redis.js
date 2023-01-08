@@ -7,9 +7,9 @@ let client = null;
 
 module.exports.init = async () => {
   client = new Redis({
-    port: process.env.REDIS_PORT,
-    host: process.env.REDIS_URL,
-    password: process.env.REDIS_PASS,
+    // port: process.env.REDIS_PORT,
+    // host: process.env.REDIS_URL,
+    // password: process.env.REDIS_PASS,
     lazyConnect: true
   });
 

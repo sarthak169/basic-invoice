@@ -52,7 +52,7 @@ mongoose
 
       try {
         // here we can run all our default services like connecting redis or starting other default services
-        await RedisService.init();
+        //await RedisService.init(); // my plan was to add rate limiting as well that is why made redis service
       } catch (err) {
         log.error(`Server startup failed: ${err}`);
         process.exit(1);
