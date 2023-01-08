@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const log = require('./loggers/appLogger')(__filename);
 const mongoose = require('mongoose');
@@ -7,6 +6,7 @@ const compression = require('compression');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const http = require('http');
+const RedisService = require('./services/Redis');
 
 
 require('dotenv').config();
@@ -15,6 +15,8 @@ const initRoutes = require('./routes');
 
 
 const app = express();
+
+// we can use sentry here as well for logging all our errors properly
 
 mongoose
   .connect(process.env.DB_STRING, {
@@ -39,26 +41,18 @@ mongoose
     app.use(express.urlencoded({ extended: false }));
     app.use(cookieParser());
 
-    // Serve the static files from the React app
-    app.use(express.static(path.join(__dirname, '../client/build')));
-
     // Define API Routes here
     log.info('Initializing routes');
     initRoutes(app);
 
-    // app.get('*', (req, res) => {
-    //   res.sendFile(path.join(__dirname, '../client/build/index.html'));
-    // });
-
-    // eslint-disable-next-line new-cap
     const server = http.Server(app);
-    // const io = socketio(server);
 
     server.listen(process.env.PORT, async () => {
       log.info(`Server running on: http://localhost:${process.env.PORT}`);
 
       try {
-        // here we can run all our default services like setting up the default db things or redis service and things like that
+        // here we can run all our default services like connecting redis or starting other default services
+        await RedisService.init();
       } catch (err) {
         log.error(`Server startup failed: ${err}`);
         process.exit(1);
