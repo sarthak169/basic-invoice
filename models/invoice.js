@@ -17,11 +17,13 @@ const invoiceSchema = new Schema({
   },
   brandName: { // this will be the brand name for which the invoice is
     type: String,
-    required: true
+    required: true,
+    max: 64
   }, 
   salesmanName: { // this is the name of the salesman 
     type: String,
-    required: true
+    required: true,
+    max: 32
   }, 
   invoiceAmount: { // this will be the invoice amount to be paid it cannot be less than 0
     type: Number,
