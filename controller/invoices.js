@@ -237,6 +237,8 @@ module.exports.getInvoicesPaginated = async (req, res) => {
 };
 
 module.exports.getParticularInvoice = async (req, res) => {
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
   try {
     const { code } = req.body;
 
